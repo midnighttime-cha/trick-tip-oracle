@@ -22,6 +22,17 @@ next
 ```sql
 ALTER USER sys IDENTIFIED BY "new_password";
 ```
+## Get sequence next value
+```sql
+SELECT "APP_DBA"."TABLE_TEST_SEQ".nextval ID FROM DUAL
+```
+
+## Get sequence last value
+```sql
+SELECT last_number
+FROM user_sequences
+WHERE sequence_name = 'TABLE_TEST_SEQ';
+```
 
 
 
