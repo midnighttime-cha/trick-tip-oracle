@@ -8,6 +8,20 @@ FROM USER_TAB_COLUMNS
 WHERE table_name = 'MYTABLE'
 ```
 
+## Table Modify
+```sql
+ALTER TABLE TEST_PROJECT2 MODIFY proj_name VARCHAR2(300);
+```
+
+## Reset password sys
+```bash
+sqlplus /nolog
+connect / as sysdba
+```
+next
+```sql
+ALTER USER sys IDENTIFIED BY "new_password";
+```
 
 
 
