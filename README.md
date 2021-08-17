@@ -1,5 +1,5 @@
 
-# SQL for Oracl
+# SQL for Oracle
 
 ## Get all column name
 ```sql
