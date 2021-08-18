@@ -34,6 +34,11 @@ FROM user_sequences
 WHERE sequence_name = 'TABLE_TEST_SEQ';
 ```
 
+## Reset sequence last value
+```sql
+ALTER SEQUENCE TABLE_TEST_SEQ RESTART START WITH 10;
+```
+
 
 
 # รวมการแก้ปัญหา Oracle 12c
