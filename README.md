@@ -59,7 +59,7 @@ CREATE USER TEST_DBA IDENTIFIED BY 12345;
 ```sql
 SELECT s.sid, s.serial#, s.status, p.spid 
   FROM v$session s, v$process p 
- WHERE s.username = 'TEST' --<<<--
+ WHERE s.username = 'TEST'
   AND p.addr(+) = s.paddr;
 # Output
 
