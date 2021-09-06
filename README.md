@@ -57,7 +57,7 @@ CREATE USER TEST_DBA IDENTIFIED BY 12345;
 
 ## ORA-01940: cannot drop a user that is currently connected
 ```sql
-SELECT s.sid, s.serial#, s.status, p.spid 
+SELECT s.sid, s.serial, s.status, p.spid 
   FROM v$session s, v$process p 
  WHERE s.username = 'TEST'
   AND p.addr(+) = s.paddr;
