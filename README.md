@@ -39,6 +39,13 @@ WHERE sequence_name = 'TABLE_TEST_SEQ';
 ALTER SEQUENCE TABLE_TEST_SEQ RESTART START WITH 10;
 ```
 
+## Instance
+
+### Selct instance
+```sql
+select instance_name from v$instance;
+select version from v$instance;
+```
 
 
 # รวมการแก้ปัญหา Oracle 12c
