@@ -48,6 +48,25 @@ select version from v$instance;
 ```
 
 
+## Tablespace
+
+### DROP TABLESPACE and TEMPORARY
+
+Delete Tablespace
+```sql
+DROP TABLESPACE tbs_01 
+    INCLUDING CONTENTS 
+        CASCADE CONSTRAINTS;
+```
+
+Delete tablespace and datafile
+```sql
+DROP TABLESPACE tbs_02
+   INCLUDING CONTENTS AND DATAFILES;
+```
+
+
+
 # รวมการแก้ปัญหา Oracle 12c
 
 ## ORA-28014: Cannot Drop Administrative Users
