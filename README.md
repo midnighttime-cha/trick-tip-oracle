@@ -126,3 +126,8 @@ expdp system/SystemPass@XE directory=DATA_PUMP_DIR dumpfile=DATA_EXAMPLE.DMP log
 ```sh
 impdp system/SystemPass@XE directory=DATA_PUMP_DIR dumpfile=DATA_EXAMPLE.DMP logfile=DATA_EXAMPLE.log schemas=DATA_EXAMPLE
 ```
+
+## SHOW DIRECTORY
+```sh
+SELECT * FROM DBA_DIRECTORIES;
+```
