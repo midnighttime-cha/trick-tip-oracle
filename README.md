@@ -137,3 +137,8 @@ impdp system/SystemPass@XE directory=DATA_PUMP_DIR dumpfile=DATA_EXAMPLE.DMP log
 ```sh
 SELECT * FROM DBA_DIRECTORIES;
 ```
+
+## CREATE DIRECTORY
+```sql
+CREATE DIRECTORY data_pump_dir AS '/path/to/your/directory';
+```
