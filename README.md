@@ -141,6 +141,62 @@ impdp system/SystemPass@XE directory=DATA_PUMP_DIR dumpfile=DATA_EXAMPLE.DMP log
 SELECT * FROM DBA_DIRECTORIES;
 ```
 
+## Oracle Not available
+1. Check the Listener Status
+```
+lsnrctl status
+
+lsnrctl start
+```
+
+2. Manually Register the Service
+Step 1: Login to the database as SYSDBA
+```
+sqlplus / as sysdba
+```
+Step 2: Set Dynamic Registration
+```sql
+ALTER SYSTEM REGISTER;
+```
+Step 3: Restart the Listener
+```
+lsnrctl stop
+lsnrctl start
+```
+Step 4: Restart the Database (if needed)
+```sql
+shutdown immediate;
+startup;
+```
+3. Verify tnsnames.ora
+Check your tnsnames.ora file to ensure the service name [SID] is correctly defined.
+```sh
+$ORACLE_HOME/network/admin/tnsnames.ora
+```
+example output:
+```
+TESTDB1 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.99)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVICE_NAME = TESTDB1)
+    )
+  )
+```
+If it is incorrect, update the tnsnames.ora file, save it, and reload:
+```
+tnsping TESTDB1
+```
+If tnsping fails, there is still an issue with the service name.
+4. Ensure the PDB is Open (for Pluggable Databases)
+```sql
+ALTER PLUGGABLE DATABASE TESTDB1 OPEN;
+```
+Then force it to register:
+```sql
+ALTER SYSTEM REGISTER;
+```
+
 ## CREATE DIRECTORY
 ```sql
 CREATE DIRECTORY data_pump_dir AS '/path/to/your/directory';
