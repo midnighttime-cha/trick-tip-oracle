@@ -197,6 +197,15 @@ Then force it to register:
 ALTER SYSTEM REGISTER;
 ```
 
+Grant สิทธิ์สำหรับ Reference ข้าม Schema
+```sql
+BEGIN
+  FOR t IN (SELECT table_name FROM all_tables WHERE owner = 'TEST_DBA1') LOOP
+    EXECUTE IMMEDIATE 'GRANT SELECT, REFERENCES ON TEST_DBA1.' || t.table_name || ' TO TEST_DBA2';
+  END LOOP;
+END;
+```
+
 ## CREATE DIRECTORY
 ```sql
 CREATE DIRECTORY data_pump_dir AS '/path/to/your/directory';
