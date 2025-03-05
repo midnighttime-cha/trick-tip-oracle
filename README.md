@@ -210,3 +210,75 @@ END;
 ```sql
 CREATE DIRECTORY data_pump_dir AS '/path/to/your/directory';
 ```
+
+## Tuning
+ตรวจสอบ
+```sql
+SELECT COMPONENT, CURRENT_SIZE, MIN_SIZE, MAX_SIZE
+FROM V$SGA_DYNAMIC_COMPONENTS;
+```
+
+1. ปรับ Database Buffer Cache
+ค่าปกติของ Database Buffer Cache ขึ้นอยู่กับ SGA_TARGET ถ้าเปิดใช้ AUTO MEMORY MANAGEMENT
+หากต้องการกำหนดเอง ให้ใช้คำสั่ง:
+```sql
+ALTER SYSTEM SET DB_CACHE_SIZE = 1G SCOPE=BOTH;
+```
+(512M สามารถเปลี่ยนเป็นค่าที่ต้องการ เช่น 1G หรือ 256M)
+
+2. ปรับ Shared Pool Size
+หาก SQL Execution ใช้เวลานาน หรือมีการ Compile PL/SQL บ่อย ๆ ให้เพิ่มขนาด Shared Pool
+```sql
+ALTER SYSTEM SET SHARED_POOL_SIZE = 256M SCOPE=BOTH;
+```
+
+3. ปรับ Redo Log Buffer Size
+หากมีการเขียนข้อมูลหนัก (INSERT, UPDATE, DELETE) อาจต้องเพิ่ม Redo Log Buffer
+```
+ALTER SYSTEM SET LOG_BUFFER = 32M SCOPE=SPFILE;
+```
+(ต้อง Restart Database หลังจากเปลี่ยนค่าของ LOG_BUFFER)
+
+4. เปิดใช้งาน Automatic Memory Management (AMM)
+ถ้าไม่ต้องการตั้งค่าทีละตัว สามารถเปิดใช้ Automatic Memory Management (AMM)
+```sql
+ALTER SYSTEM SET MEMORY_TARGET = 2G SCOPE=SPFILE;
+ALTER SYSTEM SET MEMORY_MAX_TARGET = 2G SCOPE=SPFILE;
+```
+(ค่าขึ้นอยู่กับ RAM ของเครื่อง เช่น 4G, 8G)
+
+5. ใช้คำสั่ง SQL นี้เพื่อตรวจสอบ Cache Hit Ratio
+```sql
+SELECT NAME, VALUE
+FROM V$SYSSTAT
+WHERE NAME IN ('db block gets', 'consistent gets', 'physical reads');
+```
+
+จากนั้นคำนวณ Buffer Cache Hit Ratio:
+```sql
+SELECT (1 - (phy.value / (cur.value + con.value))) * 100 AS "Buffer Cache Hit Ratio"
+FROM V$SYSSTAT cur, V$SYSSTAT con, V$SYSSTAT phy
+WHERE cur.name = 'db block gets'
+AND con.name = 'consistent gets'
+AND phy.name = 'physical reads';
+```
+ค่า Buffer Cache Hit Ratio ควรอยู่ที่ > 90% ถ้าต่ำกว่า ควรเพิ่ม DB_CACHE_SIZE
+
+6. ปรับใช้ Keep Pool และ Recycle Pool (Optional)
+ถ้าต้องการให้ข้อมูลบางส่วนอยู่ใน Cache นานขึ้น หรือให้ล้าง Cache บางส่วนเร็วขึ้น
+- สร้าง Keep Pool สำหรับ Table ที่ต้องการเก็บใน Cache ตลอด
+```sql
+ALTER SYSTEM SET DB_KEEP_CACHE_SIZE = 128M;
+ALTER TABLE important_table STORAGE (BUFFER_POOL KEEP);
+```
+- สร้าง Recycle Pool สำหรับ Table ที่ไม่ต้องการเก็บใน Cache นาน
+```sql
+ALTER SYSTEM SET DB_RECYCLE_CACHE_SIZE = 64M;
+ALTER TABLE log_table STORAGE (BUFFER_POOL RECYCLE);
+```
+
+7. Restart Database เพื่อใช้ค่าที่เปลี่ยนแปลง
+```sql
+SHUTDOWN IMMEDIATE;
+STARTUP;
+```
